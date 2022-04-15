@@ -1,13 +1,94 @@
+globals[startingPopulace pohybDelka pohybUhel asd]
 
+patches-own[populace]
+
+turtles-own[ulovek]
+
+
+
+to setup
+
+  clear-all
+  set-default-shape turtles "turtle"
+  create-turtles turtleCount [move-to one-of patches]
+  reset-ticks
+
+
+  set startingPopulace 100
+  ask patches [set populace startingPopulace]
+  set pohybDelka 0.02
+  set pohybUhel 15
+
+
+
+end
+
+to go
+
+  ask patches [mnozit]
+  ask turtles [lovit pohyb]
+  tick-advance 1
+
+  set-current-plot "Populace ryb"
+  plot mean [populace] of patches
+
+  set-current-plot "Ulovek"
+  plot sum [ulovek] of turtles
+
+
+end
+
+to lovit
+
+  ifelse populace - fishingRate >= 0
+  [
+    set populace populace - fishingRate
+    set ulovek fishingRate
+  ]
+  [
+    set ulovek populace
+    set populace 0
+  ]
+
+end
+
+to pohyb
+
+
+  set heading (heading + (pohybUhel / 2) - random pohybUhel)
+  fd pohybDelka
+end
+
+to mnozit
+
+  set populace logistickaFunkce mean [populace] of neighbors
+  set pcolor populace / 20 + 10
+end
+
+to-report logistickaFunkce [a]
+
+  report a + a * reproductionRate * ( 1 - a * 0.005)
+end
+
+to pocitadlo
+
+  ifelse asd = 3
+  [
+    ;;ask patches [mnozit]
+    ask turtles[lovit]
+    set asd 0
+  ]
+  [set asd asd + 1]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
+23
 10
-647
-448
+812
+800
 -1
 -1
-13.0
+12.02
 1
 10
 1
@@ -17,15 +98,130 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
+-32
+32
+-32
+32
 0
 0
 1
 ticks
 30.0
+
+BUTTON
+849
+48
+912
+81
+NIL
+setup
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+925
+69
+988
+102
+NIL
+go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+830
+191
+1002
+224
+reproductionRate
+reproductionRate
+0
+0.01
+0.001
+0.0001
+1
+NIL
+HORIZONTAL
+
+SLIDER
+833
+122
+1005
+155
+fishingRate
+fishingRate
+0
+50
+39.8
+0.1
+1
+NIL
+HORIZONTAL
+
+PLOT
+832
+561
+1327
+799
+Populace ryb
+ticks 
+populace
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot mean [populace] of patches"
+
+PLOT
+831
+308
+1326
+552
+Ulovek
+ticks
+ulovek
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot sum [ulovek] of turtles"
+
+SLIDER
+829
+156
+1001
+189
+turtleCount
+turtleCount
+0
+100
+10.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
