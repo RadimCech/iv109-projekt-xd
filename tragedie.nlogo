@@ -40,10 +40,11 @@ end
 
 to lovit
 
-  ifelse populace - fishingRate >= 0
+  set populace populace - populace * fishingRatePercentage
+  ifelse populace - fishingRateFlat >= 0
   [
-    set populace populace - fishingRate
-    set ulovek fishingRate
+    set populace populace - fishingRateFlat
+    set ulovek fishingRateFlat
   ]
   [
     set ulovek populace
@@ -62,7 +63,7 @@ end
 to mnozit
 
   set populace logistickaFunkce mean [populace] of neighbors
-  set pcolor populace / 20 + 10
+  set pcolor populace * 0.05 + 10
 end
 
 to-report logistickaFunkce [a]
@@ -143,14 +144,14 @@ NIL
 1
 
 SLIDER
-830
-191
-1002
+831
 224
+1003
+257
 reproductionRate
 reproductionRate
 0
-0.01
+0.002
 0.001
 0.0001
 1
@@ -158,10 +159,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-833
-122
-1005
-155
+1259
+87
+1431
+120
 fishingRate
 fishingRate
 0
@@ -209,15 +210,45 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot sum [ulovek] of turtles"
 
 SLIDER
-829
-156
-1001
+830
 189
+1002
+222
 turtleCount
 turtleCount
 0
 100
 10.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+831
+110
+1003
+143
+fishingRateFlat
+fishingRateFlat
+0
+50
+20.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+831
+144
+1006
+177
+fishingRatePercentage
+fishingRatePercentage
+0
+50
+25.0
 1
 1
 NIL
