@@ -1,6 +1,6 @@
 globals[startingPopulace pohybDelka pohybUhel asd]
 
-patches-own[populace]
+patches-own[populace zakaz]
 
 turtles-own[ulovek]
 
@@ -13,6 +13,10 @@ to setup
   create-turtles turtleCount [move-to one-of patches]
   reset-ticks
 
+
+  ;; zakazane oblasti
+  if zakazanaOblast = true
+  [ask patches with [abs(pxcor) <= 8 and abs(pxcor) >= -8 and abs(pycor) <= 8 and abs(pycor) >= -8] [set pcolor yellow set zakaz true]]
 
   set startingPopulace 100
   ask patches [set populace startingPopulace]
@@ -39,15 +43,15 @@ to go
 end
 
 to lovit
-
+  set ulovek populace * fishingRatePercentage
   set populace populace - populace * fishingRatePercentage
   ifelse populace - fishingRateFlat >= 0
   [
     set populace populace - fishingRateFlat
-    set ulovek fishingRateFlat
+    set ulovek ulovek + fishingRateFlat
   ]
   [
-    set ulovek populace
+    set ulovek ulovek + populace
     set populace 0
   ]
 
@@ -55,7 +59,22 @@ end
 
 to pohyb
 
-
+  ifelse zakaz = true
+  [
+    set heading (heading + (pohybUhel / 2) - random pohybUhel)
+    fd pohybDelka * 3
+  ]
+  [
+    ifelse [zakaz] of patch-ahead 1 = true
+    [
+      set heading heading + 180
+      fd pohybDelka
+    ]
+    [
+      set heading (heading + (pohybUhel / 2) - random pohybUhel)
+      fd pohybDelka
+    ]
+  ]
   set heading (heading + (pohybUhel / 2) - random pohybUhel)
   fd pohybDelka
 end
@@ -75,7 +94,6 @@ to pocitadlo
 
   ifelse asd = 3
   [
-    ;;ask patches [mnozit]
     ask turtles[lovit]
     set asd 0
   ]
@@ -253,6 +271,17 @@ fishingRatePercentage
 1
 NIL
 HORIZONTAL
+
+SWITCH
+1098
+125
+1241
+158
+zakazanaOblast
+zakazanaOblast
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
