@@ -1,4 +1,4 @@
-globals[startingPopulace pohybDelka pohybUhel asd]
+globals[startingPopulace pohybDelka pohybUhel pocitadloNeloveni pocitadloLoveni]
 
 patches-own[populace zakaz]
 
@@ -13,10 +13,12 @@ to setup
   create-turtles turtleCount [move-to one-of patches]
   reset-ticks
 
+  set pocitadloLoveni 1
 
   ;; zakazane oblasti
+  ask patches [set zakaz false]
   if zakazanaOblast = true
-  [ask patches with [abs(pxcor) <= 8 and abs(pxcor) >= -8 and abs(pycor) <= 8 and abs(pycor) >= -8] [set pcolor yellow set zakaz true]]
+  [ask patches with [abs(pxcor) <= velikostZakazaneOblasti and abs(pxcor) >= (0 - velikostZakazaneOblasti) and abs(pycor) <= velikostZakazaneOblasti and abs(pycor) >= (0 - velikostZakazaneOblasti)] [set pcolor yellow set zakaz true]]
 
   set startingPopulace 100
   ask patches [set populace startingPopulace]
@@ -28,6 +30,8 @@ to setup
 end
 
 to go
+
+  if casoveOpatreni = true [pocitadlo]
 
   ask patches [mnozit]
   ask turtles [lovit pohyb]
@@ -43,18 +47,20 @@ to go
 end
 
 to lovit
-  set ulovek populace * fishingRatePercentage
-  set populace populace - populace * fishingRatePercentage
-  ifelse populace - fishingRateFlat >= 0
+  if  zakaz = false and pocitadloLoveni > 0
   [
-    set populace populace - fishingRateFlat
-    set ulovek ulovek + fishingRateFlat
+    set ulovek populace * fishingRatePercentage
+    set populace populace - populace * fishingRatePercentage
+    ifelse populace - fishingRateFlat >= 0
+    [
+      set populace populace - fishingRateFlat
+      set ulovek ulovek + fishingRateFlat
+    ]
+    [
+      set ulovek ulovek + populace
+      set populace 0
+    ]
   ]
-  [
-    set ulovek ulovek + populace
-    set populace 0
-  ]
-
 end
 
 to pohyb
@@ -62,7 +68,7 @@ to pohyb
   ifelse zakaz = true
   [
     set heading (heading + (pohybUhel / 2) - random pohybUhel)
-    fd pohybDelka * 3
+    fd pohybDelka * 4
   ]
   [
     ifelse [zakaz] of patch-ahead 1 = true
@@ -92,12 +98,22 @@ end
 
 to pocitadlo
 
-  ifelse asd = 3
+  ifelse pocitadloLoveni > 0
   [
-    ask turtles[lovit]
-    set asd 0
+
+    set pocitadloLoveni pocitadloloveni - 1
   ]
-  [set asd asd + 1]
+  [
+    ifelse pocitadloNeloveni > 0
+    [
+
+      set pocitadloNeloveni pocitadloNeloveni - 1
+    ]
+    [
+      set pocitadloNeloveni dobaNeloveni
+      set pocitadloLoveni dobaLoveni
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -170,7 +186,7 @@ reproductionRate
 reproductionRate
 0
 0.002
-0.001
+1.0E-4
 0.0001
 1
 NIL
@@ -236,7 +252,7 @@ turtleCount
 turtleCount
 0
 100
-10.0
+11.0
 1
 1
 NIL
@@ -266,20 +282,76 @@ fishingRatePercentage
 fishingRatePercentage
 0
 50
-25.0
+26.0
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-1098
-125
-1241
-158
+1027
+105
+1170
+138
 zakazanaOblast
 zakazanaOblast
 1
+1
+-1000
+
+SLIDER
+1027
+143
+1207
+176
+velikostZakazaneOblasti
+velikostZakazaneOblasti
+0
+20
+20.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+1026
+188
+1198
+221
+dobaNeloveni
+dobaNeloveni
+0
+50
+8.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+1027
+221
+1199
+254
+dobaLoveni
+dobaLoveni
+0
+50
+8.0
+1
+1
+NIL
+HORIZONTAL
+
+SWITCH
+1097
+254
+1240
+287
+casoveOpatreni
+casoveOpatreni
+0
 1
 -1000
 
