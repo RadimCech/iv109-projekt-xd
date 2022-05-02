@@ -20,7 +20,7 @@ to setup
   if zakazanaOblast = true
   [ask patches with [abs(pxcor) <= velikostZakazaneOblasti and abs(pxcor) >= (0 - velikostZakazaneOblasti) and abs(pycor) <= velikostZakazaneOblasti and abs(pycor) >= (0 - velikostZakazaneOblasti)] [set pcolor yellow set zakaz true]]
 
-  set startingPopulace 300
+  set startingPopulace
   ask patches [set populace startingPopulace]
   set pohybDelka 0.02
   set pohybUhel 15
