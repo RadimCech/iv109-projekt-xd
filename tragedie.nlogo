@@ -20,7 +20,7 @@ to setup
   if zakazanaOblast = true
   [ask patches with [abs(pxcor) <= velikostZakazaneOblasti and abs(pxcor) >= (0 - velikostZakazaneOblasti) and abs(pycor) <= velikostZakazaneOblasti and abs(pycor) >= (0 - velikostZakazaneOblasti)] [set pcolor yellow set zakaz true]]
 
-  set startingPopulace 300
+  set startingPopulace 200
   ask patches [set populace startingPopulace]
   set pohybDelka 0.02
   set pohybUhel 15
@@ -47,7 +47,7 @@ to go
 end
 
 to lovit
-  if  zakaz = false and pocitadloLoveni > 0
+  ifelse  zakaz = false and pocitadloLoveni > 0
   [
     set ulovek populace * fishingRatePercentage
     set populace populace - populace * fishingRatePercentage
@@ -61,6 +61,7 @@ to lovit
       set populace 0
     ]
   ]
+  [set ulovek 0]
 end
 
 to pohyb
@@ -87,13 +88,13 @@ end
 
 to mnozit
 
-  set populace logistickaFunkce mean [populace] of neighbors
+  set populace logistickaFunkce (mean [populace] of neighbors + populace) / 2
   set pcolor populace * 0.02 + 10
 end
 
 to-report logistickaFunkce [a]
 
-  report a + a * reproductionRate * ( 1 - a * 0.005)
+  report a + a * reproductionRate * ( 1 - a * 0.002)
 end
 
 to pocitadlo
@@ -186,23 +187,8 @@ reproductionRate
 reproductionRate
 0
 0.002
-0.0012
+0.0014
 0.0001
-1
-NIL
-HORIZONTAL
-
-SLIDER
-1259
-87
-1431
-120
-fishingRate
-fishingRate
-0
-50
-39.8
-0.1
 1
 NIL
 HORIZONTAL
@@ -252,7 +238,7 @@ turtleCount
 turtleCount
 0
 100
-10.0
+11.0
 1
 1
 NIL
@@ -267,7 +253,7 @@ fishingRateFlat
 fishingRateFlat
 0
 50
-20.0
+26.0
 1
 1
 NIL
@@ -282,7 +268,7 @@ fishingRatePercentage
 fishingRatePercentage
 0
 50
-15.0
+20.0
 1
 1
 NIL
@@ -321,9 +307,9 @@ SLIDER
 221
 dobaNeloveni
 dobaNeloveni
-0
+1
 50
-8.0
+9.0
 1
 1
 NIL
@@ -336,9 +322,9 @@ SLIDER
 254
 dobaLoveni
 dobaLoveni
-0
+1
 50
-8.0
+12.0
 1
 1
 NIL
